@@ -15,10 +15,11 @@ body {
 }
 
 #pointer {
-    width: 60px;
+    width: 40px;
     position: absolute;
-    top: 145px;
-    left: 145px;
+    top: -20px;
+    left: 155px;
+    z-index: 10;
 }
 
 #spinBtn {
