@@ -1,0 +1,19 @@
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;background:linear-gradient(180deg,#f7fbff,#e6f0ff);min-height:100vh;display:flex;align-items:center;justify-content:center}
+.container{width:100%;max-width:720px;padding:20px;text-align:center}
+h1{margin:0 0 10px;font-size:22px}
+.wheel-wrap{position:relative;width:320px;height:320px;margin:20px auto}
+.wheel{width:100%;height:100%;border-radius:50%;overflow:hidden;position:relative;transition:transform 5s cubic-bezier(.2,.9,.2,1)}
+.sector{position:absolute;width:50%;height:50%;left:50%;top:50%;transform-origin:0% 0%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;padding-left:12px}
+.sector:nth-child(1){background:#3b82f6;transform:rotate(0deg) skewY(-30deg)}
+.sector:nth-child(2){background:#60a5fa;transform:rotate(60deg) skewY(-30deg)}
+.sector:nth-child(3){background:#10b981;transform:rotate(120deg) skewY(-30deg)}
+.sector:nth-child(4){background:#f59e0b;transform:rotate(180deg) skewY(-30deg)}
+.sector:nth-child(5){background:#ef4444;transform:rotate(240deg) skewY(-30deg)}
+.sector:nth-child(6){background:#8b5cf6;transform:rotate(300deg) skewY(-30deg)}
+.marker{position:absolute;left:50%;top:-10px;transform:translateX(-50%);font-size:30px}
+.controls{display:flex;gap:10px;justify-content:center;margin-top:10px}
+button{padding:10px 14px;border-radius:8px;border:0;background:#111;color:#fff;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+.result{margin-top:14px;font-size:18px;font-weight:600}
+footer{margin-top:18px}
