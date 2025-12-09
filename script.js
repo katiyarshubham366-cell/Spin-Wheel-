@@ -18,9 +18,9 @@ pointsEl.innerHTML = points;
 spinsLeftEl.innerHTML = spinsLeft;
 
 // SOUND EFFECTS
-const spinSound = new Audio("assets/spin.mp3");
-const winSound = new Audio("assets/win.mp3");
-const clickSound = new Audio("assets/click.mp3");
+const spinSound = new Audio("assets/spin.wav");
+const winSound = new Audio("assets/win.wav");
+const clickSound = new Audio("assets/click.wav");
 
 // REWARDS (weighted)
 const sectors = [
@@ -104,3 +104,4 @@ document.getElementById("spinBtn").onclick = () => {
         alert(`🎉 You won ${reward} points!`);
     }, 5200);
 };
+
