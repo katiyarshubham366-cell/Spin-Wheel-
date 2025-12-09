@@ -1,42 +1,33 @@
-<!doctype html>
+   <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Spin Wheel - Prototype</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spin Wheel</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- Telegram MiniApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
+
 <body>
-  <div class="container">
-    <h1>🎉 Welcome to Spin & Win Prototype</h1>
-    <p id="welcome">You have <span id="spins">1</span> free spin(s). Points: <span id="points">0</span></p>
+    <div class="container">
+        <h2>Spin & Win</h2>
 
-    <div class="wheel-wrap">
-      <div id="wheel" class="wheel">
-        <!-- 6 sectors -->
-        <div class="sector">100</div>
-        <div class="sector">100</div>
-        <div class="sector">200</div>
-        <div class="sector">300</div>
-        <div class="sector">400</div>
-        <div class="sector">500</div>
-      </div>
-      <div class="marker">▼</div>
+        <div id="wheel">
+            <canvas id="wheelCanvas" width="350" height="350"></canvas>
+            <img id="pointer" src="https://i.imgur.com/y7Yh3S5.png" />
+        </div>
+
+        <button id="spinBtn">SPIN</button>
+
+        <div class="stats">
+            <p><strong>User:</strong> <span id="username"></span></p>
+            <p><strong>Points:</strong> <span id="points">0</span></p>
+            <p><strong>Daily Spins Left:</strong> <span id="spinsLeft">5</span></p>
+        </div>
     </div>
 
-    <div class="controls">
-      <button id="spinBtn">Spin</button>
-      <button id="adBtn">Watch Ad (simulate +1 spin)</button>
-      <button id="resetBtn">Reset</button>
-    </div>
-
-    <div id="result" class="result"></div>
-
-    <footer>
-      <small>Prototype: client-side only. Probabilities implemented as: 100 → 50% total, 200 → 20%, 300 → 15%, 400 → 10%, 500 → 5%.</small>
-    </footer>
-  </div>
-
-  <script src="app.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
