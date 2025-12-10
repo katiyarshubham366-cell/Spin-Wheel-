@@ -3,100 +3,110 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Spin & Win — Cyber</title>
-<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<title>Spin & Win — Cyber (Monetag integrated)</title>
+
+<!-- Monetag SDK (Rewarded Popup) -->
+<script src="//libtl.com/sdk.js" data-zone="10302036" data-sdk="show_10302036"></script>
+
 <style>
-  /* ====== cyber theme variables ====== */
-  :root{
-    --bg-1: #030312;
-    --bg-2: #071028;
-    --card: rgba(12,18,30,0.7);
-    --glass: rgba(255,255,255,0.04);
-    --neon-blue: #00d4ff;
-    --neon-purple: #8b4dff;
-    --accent: linear-gradient(90deg,var(--neon-blue),var(--neon-purple));
-    --muted: #9fb3c8;
-  }
+:root{
+  --bg-1:#030312; --bg-2:#071028; --muted:#9fb3c8;
+  --neon-blue:#00d4ff; --neon-purple:#8b4dff;
+  --wheel-size:320px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:
+  radial-gradient(1200px 600px at 10% 10%, rgba(0,212,255,0.06), transparent 6%),
+  linear-gradient(180deg,var(--bg-1),var(--bg-2)); color:#e6f7ff}
+.wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{width:100%;max-width:420px;border-radius:16px;padding:18px;box-shadow:0 10px 40px rgba(0,0,0,0.7);
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));border:1px solid rgba(255,255,255,0.03)}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple));
+  display:flex;align-items:center;justify-content:center;font-weight:800;color:#04121a;font-size:18px;box-shadow:0 6px 18px rgba(139,77,255,0.12)}
+.title{font-weight:700;font-size:16px}.sub{color:var(--muted);font-size:13px}
+.pointsBox{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);font-weight:700}
 
-  html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,Arial; background: radial-gradient(1200px 600px at 10% 10%, rgba(0, 212, 255, 0.06), transparent 6%), linear-gradient(180deg,var(--bg-1),var(--bg-2)); color:#e6f7ff}
-  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-  .card{
-    width:100%; max-width:420px; border-radius:16px; padding:18px; box-shadow: 0 10px 40px rgba(0,0,0,0.7);
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border:1px solid rgba(255,255,255,0.03);
-    position:relative; overflow:hidden;
-  }
+/* wheel area */
+.wheelArea{display:flex;flex-direction:column;align-items:center;margin-top:14px}
 
-  /* header */
-  .hdr{display:flex;align-items:center;justify-content:space-between; gap:12px}
-  .brand{display:flex;align-items:center;gap:12px}
-  .logo{
-    width:48px;height:48px;border-radius:10px; background:var(--accent); display:flex;align-items:center;justify-content:center;
-    box-shadow: 0 6px 18px rgba(139,77,255,0.12), 0 3px 6px rgba(0,212,255,0.06);
-    font-weight:800; color:#04121a; font-size:18px;
-  }
-  .title{font-weight:700;font-size:16px}
-  .sub{color:var(--muted); font-size:13px}
+/* IMPORTANT: use --wheel-size variable so pointer positioning is exact */
+.wheel-wrap{
+  position:relative;
+  width:var(--wheel-size);
+  height:var(--wheel-size);
+  margin:0 auto;
+  border-radius:50%;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  overflow:visible;
+  display:block;
+}
 
-  /* points box */
-  .pointsBox{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:8px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); font-weight:700}
+/* outer subtle ring */
+.wheel-wrap::before{
+  content:""; position:absolute; inset:-8px; border-radius:50%;
+  background:transparent; border:6px solid rgba(0,238,255,0.06); pointer-events:none;
+  box-shadow: 0 0 18px rgba(0,212,255,0.04);
+  animation: ringGlow 6s linear infinite;
+}
+@keyframes ringGlow{0%{filter:drop-shadow(0 0 6px rgba(0,212,255,0.06))}50%{filter:drop-shadow(0 0 22px rgba(0,212,255,0.12))}100%{filter:drop-shadow(0 0 6px rgba(0,212,255,0.06))}}
 
-  /* wheel area */
-  .wheelArea{display:flex;flex-direction:column;align-items:center;margin-top:14px}
-  .wheel-wrap{position:relative;width:320px;height:320px}
-  canvas#wheel{width:100%;height:100%;border-radius:50%;box-shadow: inset 0 -8px 24px rgba(0,0,0,0.6), 0 8px 30px rgba(0,0,0,0.5); transition: transform 0s; transform-origin:center center; }
-  .pointer{
-    position:absolute; left:50%; transform:translateX(-50%); top:-22px; z-index:30;
-    width:0;height:0;border-left:20px solid transparent;border-right:20px solid transparent;border-bottom:36px solid #fff;
-    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6));
-  }
-  .wheel-center{
-    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:20;
-    width:110px;height:110px;border-radius:50%; background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border:6px solid rgba(255,255,255,0.03);
-    display:flex;align-items:center;justify-content:center; flex-direction:column;
-    box-shadow: 0 6px 18px rgba(139,77,255,0.06), inset 0 -6px 24px rgba(0,0,0,0.6);
-  }
-  .center-star{font-size:18px;font-weight:800;color:var(--neon-blue)}
-  .center-sub{font-size:12px;color:var(--muted)}
+canvas#wheel{width:100%;height:100%;border-radius:50%;display:block;transform-origin:center center;}
 
-  /* controls */
-  .controls{display:flex;gap:10px;justify-content:center;margin-top:14px}
-  .btn{padding:12px 16px;border-radius:12px;border:none;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(3,6,20,0.6)}
-  .btn-primary{background:linear-gradient(90deg,#00d4ff,#8b4dff); color:#04121a}
-  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06); color:var(--muted)}
+/* ================= FIXED POINTER ================= */
+.pointer{
+  position:absolute;
+  left:50%;
+  top: calc(50% - (var(--wheel-size) / 2) - 6px);
+  transform: translateX(-50%);
+  width:0;height:0;
+  border-left:18px solid transparent;
+  border-right:18px solid transparent;
+  border-bottom:34px solid var(--neon-blue);
+  z-index:100;
+  filter: drop-shadow(0 0 10px var(--neon-blue)) drop-shadow(0 0 18px var(--neon-purple));
+  animation: pulseGlow 2s infinite ease-in-out;
+  pointer-events:none;
+}
+@keyframes pulseGlow{0%{filter:drop-shadow(0 0 6px var(--neon-blue))}50%{filter:drop-shadow(0 0 18px var(--neon-blue))}100%{filter:drop-shadow(0 0 6px var(--neon-blue))}}
 
-  /* meta */
-  .meta{display:flex;justify-content:space-between;color:var(--muted);margin-top:12px;font-size:13px}
-  .leaderboard{margin-top:12px;padding:10px;background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01)); border-radius:10px; border:1px solid rgba(255,255,255,0.02); color:#cfe7ff; font-size:13px}
+.pointer.shake{animation:pointerShake 0.28s ease-in-out 3}
+@keyframes pointerShake{
+  0%{transform:translateX(-50%) rotate(0)}
+  25%{transform:translateX(calc(-50% - 3px)) rotate(-3deg)}
+  50%{transform:translateX(-50%) rotate(0)}
+  75%{transform:translateX(calc(-50% + 3px)) rotate(3deg)}
+  100%{transform:translateX(-50%) rotate(0)}
+}
 
-  /* Loading overlay */
-  .loadingOverlay{
-    position:fixed; inset:0; display:flex;align-items:center;justify-content:center; z-index:9999;
-    background: linear-gradient(180deg, rgba(2,6,23,0.7), rgba(2,6,23,0.9));
-    color:#fff; flex-direction:column; gap:16px;
-  }
-  .loader{
-    width:92px;height:92px;border-radius:50%;
-    background: conic-gradient(var(--neon-blue), var(--neon-purple), rgba(255,255,255,0.06));
-    display:flex;align-items:center;justify-content:center; box-shadow: 0 8px 30px rgba(139,77,255,0.12);
-    animation: spin 1.2s linear infinite;
-  }
-  @keyframes spin{100%{transform: rotate(360deg)}}
+/* center cap */
+.wheel-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:50;width:110px;height:110px;border-radius:50%;
+  background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border:6px solid rgba(255,255,255,0.03);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;box-shadow:0 6px 18px rgba(139,77,255,0.06)}
+.center-star{font-size:18px;color:var(--neon-blue);font-weight:800}.center-sub{font-size:12px;color:var(--muted)}
 
-  .welcome{
-    position:fixed; left:50%; transform:translateX(-50%); top:28px; z-index:999;
-    background: linear-gradient(90deg, rgba(0,212,255,0.08), rgba(139,77,255,0.06)); padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03); font-weight:700;
-    box-shadow:0 8px 18px rgba(0,0,0,0.6); opacity:0; transform-origin:center top; transition:all .6s cubic-bezier(.2,.9,.2,1);
-  }
-  .welcome.show{opacity:1; transform:translateX(-50%) translateY(0);}
+/* controls */
+.controls{display:flex;gap:10px;justify-content:center;margin-top:14px}
+.btn{padding:12px 16px;border-radius:12px;border:none;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(3,6,20,0.6)}
+.btn-primary{background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple));color:#04121a}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
 
-  /* responsive small */
-  @media (max-width:360px){
-    .wheel-wrap{width:280px;height:280px}
-  }
+/* meta / leaderboard */
+.meta{display:flex;justify-content:space-between;color:var(--muted);margin-top:12px;font-size:13px}
+.leaderboard{margin-top:12px;padding:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01));border-radius:10px;border:1px solid rgba(255,255,255,0.02);color:#cfe7ff;font-size:13px}
+
+/* loading & welcome */
+.loadingOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;background:linear-gradient(180deg, rgba(2,6,23,0.75), rgba(2,6,23,0.95));flex-direction:column;gap:16px}
+.loader{width:92px;height:92px;border-radius:50%;background:conic-gradient(var(--neon-blue),var(--neon-purple),rgba(255,255,255,0.06));display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(139,77,255,0.12);animation:spin 1.2s linear infinite}
+@keyframes spin{100%{transform:rotate(360deg)}}
+.welcome{position:fixed;left:50%;transform:translateX(-50%);top:28px;z-index:999;background:linear-gradient(90deg, rgba(0,212,255,0.08), rgba(139,77,255,0.06));padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);font-weight:700;box-shadow:0 8px 18px rgba(0,0,0,0.6);opacity:0;transform-origin:center top;transition:all .6s cubic-bezier(.2,.9,.2,1)}
+.welcome.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:380px){ :root{ --wheel-size:280px; } }
 </style>
 </head>
 <body>
-  <!-- Loading overlay -->
   <div id="loading" class="loadingOverlay" aria-hidden="false">
     <div class="loader" aria-hidden="true"></div>
     <div style="text-align:center">
@@ -105,7 +115,6 @@
     </div>
   </div>
 
-  <!-- Welcome toast -->
   <div id="welcome" class="welcome">Welcome</div>
 
   <div class="wrap">
@@ -125,7 +134,6 @@
         <div class="wheel-wrap" aria-hidden="false">
           <div class="pointer" aria-hidden="true"></div>
           <canvas id="wheel" width="600" height="600" role="img" aria-label="Prize wheel"></canvas>
-
           <div class="wheel-center">
             <div class="center-star">★</div>
             <div class="center-sub small">Tap SPIN</div>
@@ -150,20 +158,17 @@
     </div>
   </div>
 
-  <!-- Sounds -->
+  <!-- sounds -->
   <audio id="spinSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_19df6f04e2.mp3?filename=wheel-spin-112941.mp3"></audio>
   <audio id="tickSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4d8f7a7d4a.mp3?filename=ui-tick-6004.mp3"></audio>
   <audio id="winSound"  src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f4f0e9c8b2.mp3?filename=success-1-6297.mp3"></audio>
 
 <script>
-/* ==========================
-   CONFIG — EDIT IF NEEDED
-   ========================== */
-const BACKEND_BASE = "https://spin-backend-yzlk.onrender.com"; // your backend
+/* CONFIG */
+const BACKEND_BASE = "https://spin-backend-yzlk.onrender.com";
 const FREE_SPINS_PER_DAY = 3;
-const POLL_AD_MS = 3500; // poll interval after ad page opened
-/* ========================== */
 
+/* Telegram WebApp */
 const tg = window.Telegram?.WebApp;
 if (tg) tg.expand();
 
@@ -184,9 +189,9 @@ const winSound = document.getElementById('winSound');
 
 let user = null;
 let isAnimating = false;
-let adPollInterval = null;
+let adTokensLocal = 0;        // local ad tokens (in case backend not updated yet)
 
-/* Prize table: must match server order if server-side used */
+/* Prize setup */
 const SEGMENTS = [
   {value:10, weight:20}, {value:15, weight:18}, {value:20, weight:15}, {value:25, weight:12},
   {value:30, weight:10}, {value:50, weight:7}, {value:55, weight:6}, {value:80, weight:5},
@@ -194,7 +199,7 @@ const SEGMENTS = [
 ];
 const COLORS = ["#0ff6ff","#6a6dff","#ff6ad5","#ffd166","#a4ffb8","#58b7ff","#c47bff","#ff7b7b","#ffe082","#8de0ff","#b39dff"];
 
-/* ---------------- draw wheel ---------------- */
+/* draw */
 function drawWheel(angleOffset=0){
   const n = SEGMENTS.length;
   const arc = (2*Math.PI)/n;
@@ -206,19 +211,17 @@ function drawWheel(angleOffset=0){
     ctx.closePath();
     ctx.fillStyle = COLORS[i%COLORS.length];
     ctx.fill();
-    // label
     ctx.save(); ctx.translate(cx,cy); ctx.rotate(start + arc/2);
     ctx.textAlign = "right"; ctx.fillStyle = "#04121a"; ctx.font = "bold 46px sans-serif";
     ctx.fillText(SEGMENTS[i].value+"", cx - 140, 18);
     ctx.restore();
   }
-  // center
   ctx.beginPath(); ctx.arc(cx,cy,110,0,2*Math.PI); ctx.fillStyle="rgba(4,6,10,0.9)"; ctx.fill();
   ctx.beginPath(); ctx.arc(cx,cy,82,0,2*Math.PI); ctx.fillStyle="rgba(255,255,255,0.03)"; ctx.fill();
 }
 drawWheel();
 
-/* ---------------- API helpers ---------------- */
+/* API helper */
 async function api(path, method='GET', body=null){
   try{
     const opts = { method, headers:{'Content-Type':'application/json'} };
@@ -231,19 +234,13 @@ async function api(path, method='GET', body=null){
   }
 }
 
-/* ---------------- Init user & UI ---------------- */
+/* init */
 async function init(){
   showLoading(true);
-  // get initData from Telegram (if present) and authenticate
   const initData = tg ? tg.initData : null;
-  const authResp = await api('/api/auth','POST', { initData });
-  if (authResp && authResp.ok){
-    user = authResp.user;
-  } else {
-    // fallback: try to load guest or call /user with a guest id
-    const guestId = 'guest-' + Math.random().toString(36).slice(2,8);
-    user = { id: guestId, name: 'Guest', points: 0, spinsLeft: FREE_SPINS_PER_DAY, adTokens:0 };
-  }
+  const authResp = await api('/api/auth','POST',{ initData });
+  if (authResp && authResp.ok) user = authResp.user;
+  else user = { id: 'guest-' + Math.random().toString(36).slice(2,8), name:'Guest', points:0, spinsLeft:FREE_SPINS_PER_DAY, adTokens:0 };
   updateUI();
   loadLeaderboard();
   showLoading(false);
@@ -252,104 +249,105 @@ async function init(){
 function updateUI(){
   pointsEl.innerText = user.points ?? 0;
   spinsLeftEl.innerText = user.spinsLeft ?? 0;
-  adTokensEl.innerText = user.adTokens ?? 0;
+  // show adTokens: prefer backend value then local pending
+  adTokensEl.innerText = (user.adTokens ?? 0) + (adTokensLocal || 0);
 }
 
-/* ---------------- Leaderboard ---------------- */
+/* leaderboard */
 async function loadLeaderboard(){
   const r = await api('/api/leaderboard','GET');
   lbRows.innerHTML = '';
-  if (Array.isArray(r)){
-    r.slice(0,6).forEach(u=>{
-      const row = document.createElement('div'); row.style.padding='6px 0';
-      row.innerText = `${u.name || u.id}: ${u.points} pts`;
-      lbRows.appendChild(row);
-    });
-  } else {
-    lbRows.innerText = "No data";
-  }
+  if (Array.isArray(r)) r.slice(0,6).forEach(u=>{ const row=document.createElement('div'); row.style.padding='6px 0'; row.innerText = `${u.name||u.id}: ${u.points} pts`; lbRows.appendChild(row);});
+  else lbRows.innerText = "No data";
 }
 
-/* ---------------- Spin flow (server-side would be better)
-   We will request /add-spin to increase spin count only before spinning,
-   then animate a client-side spin and call /save-points to persist result.
-   If you later implement server-side spin (/api/spin) you can switch to that.
-*/
+/* spin flow - server preferred */
 document.getElementById('spinBtn').addEventListener('click', async ()=>{
   if (isAnimating) return;
-  // check spins
-  if ((user.spinsLeft || 0) <= 0 && (user.adTokens || 0) <= 0) {
-    alert('No spins left today. Watch an ad to earn one.');
+  if (((user.spinsLeft ?? 0) <= 0) && ((user.adTokens ?? 0) + (adTokensLocal||0) <= 0)) { alert('No spins left today. Watch an ad to earn one.'); return; }
+
+  // attempt server-side spin
+  const serverResp = await api('/api/spin','POST',{ userId: user.id });
+  if (serverResp && serverResp.ok) {
+    animateTo(serverResp.index, ()=> {
+      winSound.currentTime=0; winSound.play();
+      user = serverResp.user; updateUI(); loadLeaderboard();
+      shakePointer();
+      setTimeout(()=> alert(`🎉 You won ${serverResp.prize} points!`), 200);
+    });
     return;
   }
 
-  // consume either free spin or ad token locally first (server should validate too)
-  if ((user.spinsLeft || 0) > 0) user.spinsLeft--;
-  else user.adTokens--;
-
+  // fallback local consume
+  if ((user.spinsLeft || 0) > 0) user.spinsLeft--; else {
+    // consume local ad token if backend hasn't updated yet
+    if (user.adTokens > 0) user.adTokens--;
+    else if (adTokensLocal > 0) adTokensLocal--;
+    else { alert('No spins left'); return; }
+  }
   updateUI();
-
-  // inform backend: consume spin token (add-spin used here as demo)
   await api('/add-spin','POST', { userId: user.id });
 
-  // choose prize index client-side using weighted distribution
   const idx = weightedPickIndex();
-  animateTo(idx, async ()=>{
+  animateTo(idx, async ()=> {
     const prize = SEGMENTS[idx].value;
-    // play win sound
-    winSound.currentTime = 0; winSound.play();
-    // persist points to backend
-    const resp = await api('/save-points','POST', { userId: user.id, points: prize });
-    if (resp && resp.points !== undefined) {
-      user.points = resp.points;
-    } else {
-      // fallback: local accumulate
-      user.points = (user.points||0) + prize;
-    }
-    updateUI();
-    loadLeaderboard();
-    setTimeout(()=>{ alert(`🎉 You won ${prize} points!`); }, 200);
+    winSound.currentTime=0; winSound.play();
+    const save = await api('/save-points','POST', { userId: user.id, points: prize });
+    if (save && save.points !== undefined) user.points = save.points; else user.points = (user.points||0)+prize;
+    updateUI(); loadLeaderboard(); shakePointer();
+    setTimeout(()=> alert(`🎉 You won ${prize} points!`), 200);
   });
 });
 
-/* ---------------- Watch ad flow ---------------- */
-document.getElementById('watchAd').addEventListener('click', async ()=>{
-  // open the backend's reward-ad page in external browser (needed for ad providers)
-  const url = `${BACKEND_BASE}/reward-ad?userId=${encodeURIComponent(user.id)}`;
-  if (tg && tg.openLink) tg.openLink(url); else window.open(url,'_blank');
-  // start polling for ad verify credits
-  startAdPoll();
-  alert('Ad opened in new window. After completion your spin will be credited automatically.');
+/* Watch ad — Monetag rewarded popup integration */
+const watchAdBtn = document.getElementById('watchAd');
+let adInProgress = false;
+watchAdBtn.addEventListener('click', async () => {
+  if (adInProgress) return;
+  adInProgress = true;
+  watchAdBtn.disabled = true;
+  watchAdBtn.textContent = 'Opening ad...';
+
+  // Use Monetag SDK show_10302036('pop') — provided by SDK script
+  // If Monetag SDK isn't loaded or show_10302036 is not available, fallback to backend reward-ad page
+  try {
+    if (typeof show_10302036 === 'function') {
+      await show_10302036('pop'); // show rewarded popup
+      // success — user watched ad fully (or provider reported completion)
+      // credit local ad token immediately for instant UX
+      adTokensLocal = (adTokensLocal || 0) + 1;
+      updateUI();
+      // notify backend so server also credits user (server should verify with provider in prod)
+      api('/api/watch_ad_verify','POST',{ userId: user.id, providerToken: 'monetag-popup' })
+        .then(resp => {
+          // if backend returns ok and updated adTokens, merge
+          if (resp && resp.ok && resp.user && resp.user.adTokens !== undefined) {
+            // sync authoritative server value
+            user.adTokens = resp.user.adTokens;
+            adTokensLocal = 0;
+            updateUI();
+            loadLeaderboard();
+          }
+        }).catch(()=>{/* ignore network error — UI already credited locally */});
+      alert('🎉 Thanks! You earned 1 spin.');
+    } else {
+      // SDK not found — fallback to external reward page
+      const fallbackUrl = `${BACKEND_BASE}/reward-ad?userId=${encodeURIComponent(user.id)}`;
+      if (tg && tg.openLink) tg.openLink(fallbackUrl); else window.open(fallbackUrl,'_blank');
+      alert('Ad opened in external browser. After watching, the server will credit a spin.');
+    }
+  } catch (e) {
+    console.warn('Ad error or closed by user', e);
+    alert('Ad not completed or failed. No spin awarded.');
+  } finally {
+    adInProgress = false;
+    watchAdBtn.disabled = false;
+    watchAdBtn.textContent = '🎥 Watch Ad (Get Spin)';
+  }
 });
 
-/* Poll server to see if ad gave tokens */
-function startAdPoll(){
-  if (adPollInterval) return;
-  adPollInterval = setInterval(async ()=>{
-    const r = await api('/api/user','POST', { userId: user.id });
-    if (r && r.ok){
-      const prev = user.adTokens || 0;
-      user = r.user;
-      updateUI();
-      if ((user.adTokens || 0) > prev){
-        clearInterval(adPollInterval);
-        adPollInterval = null;
-        alert('✅ Ad finished — you received +1 spin.');
-      }
-    }
-  }, POLL_AD_MS);
-}
-
-/* ---------------- animation helpers ---------------- */
-function weightedPickIndex(){
-  const total = SEGMENTS.reduce((s,x)=>s+x.weight,0);
-  let r = Math.random() * total;
-  for (let i=0;i<SEGMENTS.length;i++){
-    if (r < SEGMENTS[i].weight) return i;
-    r -= SEGMENTS[i].weight;
-  }
-  return SEGMENTS.length - 1;
-}
+/* Helpers: weighted index, animate, pointer shake */
+function weightedPickIndex(){ const total = SEGMENTS.reduce((s,x)=>s+x.weight,0); let r=Math.random()*total; for(let i=0;i<SEGMENTS.length;i++){ if(r<SEGMENTS[i].weight) return i; r-=SEGMENTS[i].weight } return SEGMENTS.length-1; }
 
 function animateTo(targetIndex, onComplete){
   if (isAnimating) return;
@@ -362,46 +360,27 @@ function animateTo(targetIndex, onComplete){
   const duration = 4200;
   const start = performance.now();
   spinSound.currentTime = 0; spinSound.play();
-
   let lastTick = -1;
   function frame(now){
     const t = Math.min(1,(now - start)/duration);
-    const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+    const eased = 1 - Math.pow(1 - t, 3);
     const deg = final * eased;
     canvas.style.transform = `rotate(${deg}deg)`;
-
-    // tick every slice passed
-    const tickCount = Math.floor((eased * spins * n) );
-    if (tickCount !== lastTick){
-      tickSound.currentTime = 0; tickSound.play();
-      lastTick = tickCount;
-    }
-
+    const tickCount = Math.floor((eased * spins * n));
+    if (tickCount !== lastTick){ tickSound.currentTime = 0; tickSound.play(); lastTick = tickCount; }
     if (t < 1) requestAnimationFrame(frame);
-    else {
-      isAnimating = false;
-      // leave wheel visually rotated to final
-      canvas.style.transform = `rotate(${final}deg)`;
-      onComplete && onComplete();
-    }
+    else { isAnimating = false; canvas.style.transform = `rotate(${final}deg)`; onComplete && onComplete(); }
   }
   requestAnimationFrame(frame);
 }
 
-/* ---------------- small helpers ---------------- */
-function showLoading(show){
-  loadingEl.style.display = show ? 'flex' : 'none';
-}
-function showWelcome(){
-  const name = user?.name || (tg?.initDataUnsafe?.user?.first_name) || 'Player';
-  welcomeEl.textContent = `Welcome, ${name}`;
-  welcomeEl.classList.add('show');
-  setTimeout(()=> welcomeEl.classList.remove('show'), 4200);
-}
+function shakePointer(){ const p=document.querySelector('.pointer'); if(!p) return; p.classList.add('shake'); setTimeout(()=>p.classList.remove('shake'),900) }
 
-/* init on load */
+function showLoading(show){ loadingEl.style.display = show ? 'flex' : 'none' }
+function showWelcome(){ const name = user?.name || (tg?.initDataUnsafe?.user?.first_name) || 'Player'; welcomeEl.textContent = `Welcome, ${name}`; welcomeEl.classList.add('show'); setTimeout(()=> welcomeEl.classList.remove('show'),4200) }
+
+/* start */
 init();
-
 </script>
 </body>
 </html>
