@@ -1,420 +1,190 @@
 <!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spin Wheel</title>
 
-<html lang="en">  
-<head>  
-<meta charset="utf-8" />  
-<meta name="viewport" content="width=device-width,initial-scale=1" />  
-<title>Spin & Win — Fixed (Gold Center)</title>  <!-- Monetag SDK (Rewarded Popup) -->  <script src="//libtl.com/sdk.js" data-zone="10302036" data-sdk="show_10302036"></script>  <style>  
-:root{  
-  --bg-1:#030312; --bg-2:#071028; --muted:#9fb3c8;  
-  --neon-blue:#00d4ff; --neon-purple:#8b4dff;  
-  --wheel-size:340px; /* main wheel size (adjust if needed) */  
-  --pointer-height:30px;  
-  --gold-1:#f6c65a;  
-  --gold-2:#c78f10;  
-}  
-*{box-sizing:border-box}  
-html,body{height:100%;margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:  
-  radial-gradient(1200px 600px at 10% 10%, rgba(0,212,255,0.04), transparent 6%),  
-  linear-gradient(180deg,var(--bg-1),var(--bg-2)); color:#e6f7ff}  
-.wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}  
-.card{width:100%;max-width:460px;border-radius:16px;padding:18px;box-shadow:0 10px 40px rgba(0,0,0,0.7);  
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));border:1px solid rgba(255,255,255,0.03)}  
-.hdr{display:flex;align-items:center;justify-content:space-between;gap:12px}  
-.brand{display:flex;align-items:center;gap:12px}  
-.logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple));  
-  display:flex;align-items:center;justify-content:center;font-weight:800;color:#04121a;font-size:18px;box-shadow:0 6px 18px rgba(139,77,255,0.12)}  
-.title{font-weight:700;font-size:16px}.sub{color:var(--muted);font-size:13px}  
-.pointsBox{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);font-weight:700}  
-  
-/* wheel area */  
-.wheelArea{display:flex;flex-direction:column;align-items:center;margin-top:14px}  
-.wheel-wrap{  
-  position:relative;  
-  width:var(--wheel-size);  
-  height:var(--wheel-size);  
-  margin:0 auto;  
-  border-radius:50%;  
-  display:flex;  
-  align-items:center;  
-  justify-content:center;  
-  overflow:visible;  
-  box-shadow: 0 8px 40px rgba(0,0,0,0.6);  
-}  
-  
-/* decorative outer ring (glow) */  
-.wheel-wrap::before{  
-  content:""; position:absolute; inset:-8px; border-radius:50%;  
-  background:transparent; border:6px solid rgba(255,200,90,0.06); pointer-events:none;  
-  box-shadow: 0 0 28px rgba(199,143,16,0.06);  
-}  
-  
-/* pointer (TOP) - pointing DOWN into the wheel */  
-.pointer{  
-  position:absolute;  
-  left:50%;  
-  top: calc(50% - (var(--wheel-size) / 2) - var(--pointer-height) + 6px);  
-  transform: translateX(-50%);  
-  width:0;height:0;  
-  border-left:18px solid transparent;  
-  border-right:18px solid transparent;  
-  border-bottom:var(--pointer-height) solid #c62828; /* red pointer */  
-  z-index:40;  
-  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.6));  
-  pointer-events:none;  
-}  
-  
-/* center gold button (Option B - big gold center) */  
-.wheel-center{  
-  position:absolute;  
-  left:50%;  
-  top:50%;  
-  transform: translate(-50%,-50%); /* centered exactly */  
-  z-index:35;  
-  width:120px;  
-  height:120px;  
-  border-radius:50%;  
-  display:flex;  
-  align-items:center;  
-  justify-content:center;  
-  cursor:pointer;  
-  box-shadow:  
-    0 14px 30px rgba(0,0,0,0.6),  
-    inset 0 6px 12px rgba(255,255,255,0.06);  
-  border:6px solid rgba(255,255,255,0.03);  
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.20), rgba(255,255,255,0.02) 10%),  
-              linear-gradient(180deg, var(--gold-1), var(--gold-2));  
-}  
-.wheel-center::after{  
-  content:"";  
-  position:absolute;  
-  width:62px;height:62px;border-radius:50%;  
-  background: radial-gradient(circle at 30% 28%, rgba(255,255,255,0.12), rgba(0,0,0,0.2));  
-  border:4px solid rgba(255,255,255,0.04);  
-  box-shadow: inset 0 -6px 10px rgba(0,0,0,0.35);  
-}  
-.center-text{  
-  position:relative;  
-  z-index:2;  
-  font-weight:900;  
-  color:#2b1b00;  
-  font-size:22px;  
-  letter-spacing:1px;  
-  text-shadow: 0 2px 6px rgba(255,235,180,0.12);  
-}  
-  
-/* canvas */  
-#wheelCanvas{width:100%;height:100%;border-radius:50%;display:block;transform-origin:center center;}  
-  
-/* controls */  
-.controls{display:flex;gap:10px;justify-content:center;margin-top:14px}  
-.btn{padding:12px 16px;border-radius:12px;border:none;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(3,6,20,0.6)}  
-.btn-primary{background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple));color:#04121a}  
-.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}  
-  
-/* meta */  
-.meta{display:flex;justify-content:space-between;color:var(--muted);margin-top:12px;font-size:13px}  
-.leaderboard{margin-top:12px;padding:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01));border-radius:10px;border:1px solid rgba(255,255,255,0.02);color:#cfe7ff;font-size:13px}  
-  
-/* loading & welcome */  
-.loadingOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;background:linear-gradient(180deg, rgba(2,6,23,0.75), rgba(2,6,23,0.95));flex-direction:column;gap:16px}  
-.loader{width:92px;height:92px;border-radius:50%;background:conic-gradient(var(--neon-blue),var(--neon-purple),rgba(255,255,255,0.06));display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(139,77,255,0.12);animation:spin 1.2s linear infinite}  
-@keyframes spin{100%{transform:rotate(360deg)}}  
-.welcome{position:fixed;left:50%;transform:translateX(-50%);top:28px;z-index:999;background:linear-gradient(90deg, rgba(0,212,255,0.08), rgba(139,77,255,0.06));padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);font-weight:700;box-shadow:0 8px 18px rgba(0,0,0,0.6);opacity:0;transform-origin:center top;transition:all .6s cubic-bezier(.2,.9,.2,1)}  
-.welcome.show{opacity:1;transform:translateX(-50%) translateY(0)}  
-@media(max-width:420px){ :root{ --wheel-size:300px } }  
-</style>  </head>  
-<body>  
-  <div id="loading" class="loadingOverlay" aria-hidden="false">  
-    <div class="loader" aria-hidden="true"></div>  
-    <div style="text-align:center"><div style="font-weight:800;font-size:18px">Loading Spin & Win</div><div style="color:var(--muted);margin-top:6px">Connecting to Telegram & server...</div></div>  
-  </div>    <div id="welcome" class="welcome">Welcome</div>    <div class="wrap">  
-    <div class="card" role="main">  
-      <div class="hdr">  
-        <div class="brand">  
-          <div class="logo">SW</div>  
-          <div><div class="title">Spin & Win</div><div class="sub">Neon Cyber • Earn Spins & Points</div></div>  
-        </div>  
-        <div class="pointsBox">Points: <span id="points">0</span></div>  
-      </div>  <div class="wheelArea">  
-    <div class="wheel-wrap" aria-hidden="false">  
-      <div class="pointer" aria-hidden="true"></div>  
+<style>
+:root{
+  --bg1:#3b0b3b;
+  --bg2:#120018;
+  --gold1:#ffd166;
+  --gold2:#ffbf00;
+  --muted:#f3d8b6;
+}
 
-      <canvas id="wheelCanvas" width="600" height="600" role="img" aria-label="Prize wheel"></canvas>  
+/* THEME */
+html,body{
+  margin:0;
+  background:
+    radial-gradient(1000px 600px at 20% 10%, rgba(255,191,0,0.08), transparent 10%),
+    linear-gradient(180deg,var(--bg1),var(--bg2));
+  font-family:Inter,Arial,sans-serif;
+  color:white;
+  height:100%;
+}
 
-      <!-- GOLD CENTER BUTTON -->  
-      <div class="wheel-center" id="centerBtn" title="Tap to spin">  
-        <div class="center-text">SPIN</div>  
-      </div>  
-    </div>  
+.container{
+  max-width:480px;
+  margin:auto;
+  padding:20px;
+}
 
-    <div class="controls">  
-      <button id="watchAd" class="btn btn-ghost">🎥 Watch Ad (Get Spin)</button>  
-      <button id="spinBtn" class="btn btn-primary">SPIN</button>  
-    </div>  
+/* HEADER */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-    <div class="meta">  
-      <div>Daily Spins Left: <b id="spinsLeft">0</b></div>  
-      <div class="small">Ad Spins: <b id="adTokens">0</b></div>  
-    </div>  
+.backBtn{
+  padding:10px 16px;
+  border-radius:10px;
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.12);
+  color:var(--muted);
+  cursor:pointer;
+  font-weight:700;
+}
 
-    <div class="leaderboard" id="leaderboard"><div style="font-weight:700;margin-bottom:6px">🏆 Leaderboard</div><div id="lbRows">Loading…</div></div>  
-  </div>  
+.pointsBox{
+  padding:10px 16px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.35);
+  border:1px solid rgba(255,255,255,0.12);
+  font-weight:800;
+}
+
+/* WHEEL */
+.wheel-area{
+  margin-top:20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+#wheel{
+  width:320px;
+  height:320px;
+  border-radius:50%;
+  position:relative;
+  transition:transform 4s cubic-bezier(.17,.67,.15,1);
+}
+
+.pointer{
+  width:70px;
+  position:absolute;
+  top:-20px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:10;
+}
+
+/* TELEGRAM BUTTON */
+.telegram-btn{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(0,0,0,0.5);
+}
+
+/* SPIN BUTTON */
+.spinBtn{
+  margin-top:20px;
+  padding:14px 20px;
+  border-radius:14px;
+  font-weight:800;
+  border:none;
+  cursor:pointer;
+  background:linear-gradient(90deg,var(--gold1),var(--gold2));
+  color:#3a2b00;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <button class="backBtn" onclick="window.location.href='index.html'">← Back</button>
+    <div class="pointsBox">Points: <span id="points">0</span></div>
+  </div>
+
+  <!-- WHEEL AREA -->
+  <div class="wheel-area">
+    <img id="wheel" src="spinwheel.png">
+    <img class="pointer" src="pointer.png">
+
+    <button class="spinBtn" id="spinButton">SPIN</button>
+  </div>
+
 </div>
 
-  </div>    <!-- sounds -->  <audio id="spinSound" preload="auto" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_19df6f04e2.mp3?filename=wheel-spin-112941.mp3"></audio>
-<audio id="tickSound" preload="auto" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4d8f7a7d4a.mp3?filename=ui-tick-6004.mp3"></audio>
-<audio id="winSound" preload="auto" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f4f0e9c8b2.mp3?filename=success-1-6297.mp3"></audio>
+<!-- TELEGRAM BUTTON -->
+<img src="telegram.png" class="telegram-btn" onclick="window.open('https://t.me/Spinwheel25channel','_blank')">
 
-<script>  
-/* CONFIG */  
-const BACKEND_BASE = "https://spin-backend-yzlk.onrender.com";  
-const FREE_SPINS_PER_DAY = 3;  
-const POLL_AD_MS = 3500;  
-  
-const tg = window.Telegram?.WebApp;  
-if (tg) tg.expand();  
-  
-/* UI refs */  
-const loadingEl = document.getElementById('loading');  
-const welcomeEl = document.getElementById('welcome');  
-const pointsEl = document.getElementById('points');  
-const spinsLeftEl = document.getElementById('spinsLeft');  
-const adTokensEl = document.getElementById('adTokens');  
-const lbRows = document.getElementById('lbRows');  
-  
-const canvas = document.getElementById('wheelCanvas');  
-const ctx = canvas.getContext('2d');  
-  
-const spinSound = document.getElementById('spinSound');  
-const tickSound = document.getElementById('tickSound');  
-const winSound = document.getElementById('winSound');  
-  
-const centerBtn = document.getElementById('centerBtn');  
-const spinBtn = document.getElementById('spinBtn');  
-const watchAdBtn = document.getElementById('watchAd');  
-  
-let user = null;  
-let isAnimating = false;  
-let adTokensLocal = 0;  
-  
-/* prizes and weights: clockwise starting at top pointer slice */  
-const SEGMENTS = [15,20,25,30,50,80,100,55,10,200,150,5];  
-const WEIGHTS  = [12,11,10,9,7,4,2,3,14,1,1,20]; // tune as desired  
-const COLORS = ['#ffd166','#6a6dff','#58b7ff','#b39dff','#a4ffb8','#ff7b7b','#ff6ad5','#8de0ff','#ffe082','#c47bff','#90ee90','#ffcf66'];  
-  
-const N = SEGMENTS.length;  
-const ARC = (2*Math.PI)/N;  
-const W = canvas.width, H = canvas.height, CX = W/2, CY = H/2, R = Math.min(W,H)/2 - 16;  
-  
-/* Draw wheel (angleOffset in radians) */  
-function drawWheel(angleOffset = 0){  
-  ctx.clearRect(0,0,W,H);  
-  
-  // outer gold rim  
-  ctx.save();  
-  ctx.beginPath();  
-  ctx.arc(CX,CY,R+14,0,Math.PI*2);  
-  ctx.fillStyle = 'linear-gradient'; // placeholder - we'll paint gold manually  
-  ctx.fillStyle = '#c78f10';  
-  ctx.fill();  
-  // rivets  
-  for(let i=0;i<12;i++){  
-    const a = (i/12)*Math.PI*2 - Math.PI/2;  
-    const x = CX + Math.cos(a)*(R+14);  
-    const y = CY + Math.sin(a)*(R+14);  
-    ctx.beginPath(); ctx.arc(x,y,7,0,Math.PI*2); ctx.fillStyle='#ffd76a'; ctx.fill();  
-    ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fillStyle='#7a4b00'; ctx.fill();  
-  }  
-  ctx.restore();  
-  
-  // segments  
-  for(let i=0;i<N;i++){  
-    const start = i*ARC + angleOffset - Math.PI/2; // subtract PI/2 so 0 at top  
-    ctx.beginPath();  
-    ctx.moveTo(CX,CY);  
-    ctx.arc(CX,CY,R,start,start+ARC);  
-    ctx.closePath();  
-    ctx.fillStyle = COLORS[i % COLORS.length];  
-    ctx.fill();  
-  
-    // thin separator  
-    ctx.strokeStyle = 'rgba(0,0,0,0.12)';  
-    ctx.lineWidth = 3;  
-    ctx.stroke();  
-  
-    // label text  
-    ctx.save();  
-    ctx.translate(CX,CY);  
-    ctx.rotate(start + ARC/2);  
-    ctx.textAlign = 'right';  
-    ctx.fillStyle = '#04121a';  
-    ctx.font = 'bold 34px Arial';  
-    ctx.fillText(SEGMENTS[i].toString(), R - 60, 14);  
-    ctx.restore();  
-  }  
-  
-  // center inner gold ring & dark core (gives depth)  
-  ctx.beginPath(); ctx.arc(CX,CY,86,0,Math.PI*2); ctx.fillStyle = 'rgba(255,230,170,0.95)'; ctx.fill();  
-  ctx.beginPath(); ctx.arc(CX,CY,52,0,Math.PI*2); ctx.fillStyle='rgba(4,6,10,0.95)'; ctx.fill();  
-}  
-  
-/* API helper */  
-async function api(path, method='GET', body=null){  
-  try{  
-    const opts = { method, headers:{'Content-Type':'application/json'} };  
-    if (body) opts.body = JSON.stringify(body);  
-    const res = await fetch(BACKEND_BASE + path, opts);  
-    return await res.json();  
-  }catch(e){  
-    console.warn('API error', e);  
-    return { ok:false, error:'network' };  
-  }  
-}  
-  
-/* Init */  
-async function init(){  
-  showLoading(true);  
-  try{  
-    const initData = tg ? tg.initData : null;  
-    const authResp = await api('/api/auth','POST',{ initData });  
-    if (authResp && authResp.ok) user = authResp.user;  
-    else user = { id: 'guest-' + Math.random().toString(36).slice(2,8), name:'Guest', points:0, spinsLeft:FREE_SPINS_PER_DAY, adTokens:0 };  
-  }catch(e){  
-    user = { id: 'guest-' + Math.random().toString(36).slice(2,8), name:'Guest', points:0, spinsLeft:FREE_SPINS_PER_DAY, adTokens:0 };  
-  }  
-  
-  drawWheel(0);  
-  updateUI();  
-  loadLeaderboard();  
-  showLoading(false);  
-  showWelcome();  
-  
-  centerBtn.addEventListener('click', () => spinAction());  
-  spinBtn.addEventListener('click', () => spinAction());  
-}  
-  
-/* update UI */  
-function updateUI(){ pointsEl.innerText = user.points ?? 0; spinsLeftEl.innerText = user.spinsLeft ?? 0; adTokensEl.innerText = (user.adTokens ?? 0) + (adTokensLocal||0); }  
-  
-/* leaderboard */  
-async function loadLeaderboard(){ const r = await api('/api/leaderboard','GET'); lbRows.innerHTML = ''; if (Array.isArray(r)) r.slice(0,6).forEach(u=>{ const row=document.createElement('div'); row.style.padding='6px 0'; row.innerText = `${u.name||u.id}: ${u.points} pts`; lbRows.appendChild(row); }); else lbRows.innerText = "No data"; }  
-  
-/* spin action */  
-async function spinAction(){  
-  if (isAnimating) return;  
-  if (((user.spinsLeft ?? 0) <= 0) && ((user.adTokens ?? 0) + (adTokensLocal||0) <= 0)) { alert('No spins left today. Watch an ad to earn one.'); return; }  
-  
-  // try server-side spin  
-  const serverResp = await api('/api/spin','POST',{ userId: user.id });  
-  if (serverResp && serverResp.ok){  
-    rotateToIndex(serverResp.index, ()=>{  
-      winSound.currentTime = 0; winSound.play();  
-      user = serverResp.user; updateUI(); loadLeaderboard();  
-      setTimeout(()=> alert(`🎉 You won ${serverResp.prize} points!`), 200);  
-    });  
-    return;  
-  }  
-  
-  // local fallback: consume a spin token  
-  if ((user.spinsLeft || 0) > 0) user.spinsLeft--;  
-  else {  
-    if ((user.adTokens || 0) > 0) user.adTokens--;  
-    else if (adTokensLocal > 0) adTokensLocal--;  
-    else { alert('No spins left'); return; }  
-  }  
-  updateUI();  
-  await api('/add-spin','POST',{ userId: user.id });  
-  
-  const idx = weightedPickIndex();  
-  rotateToIndex(idx, async ()=>{  
-    const prize = SEGMENTS[idx];  
-    winSound.currentTime = 0; winSound.play();  
-    const save = await api('/save-points','POST',{ userId: user.id, points: prize });  
-    if (save && save.points !== undefined) user.points = save.points; else user.points = (user.points||0) + prize;  
-    updateUI(); loadLeaderboard();  
-    setTimeout(()=> alert(`🎉 You won ${prize} points!`), 200);  
-  });  
-}  
-  
-/* Watch ad (Monetag popup) */  
-let adInProgress = false;  
-watchAdBtn.addEventListener('click', async ()=>{  
-  if (adInProgress) return;  
-  adInProgress = true; watchAdBtn.disabled = true; watchAdBtn.textContent = 'Opening ad...';  
-  try{  
-    if (typeof show_10302036 === 'function'){  
-      await show_10302036('pop');  
-      adTokensLocal = (adTokensLocal || 0) + 1; updateUI();  
-      api('/api/watch_ad_verify','POST',{ userId: user.id, providerToken:'monetag-popup'})  
-        .then(resp => { if (resp && resp.ok && resp.user && resp.user.adTokens !== undefined) { user.adTokens = resp.user.adTokens; adTokensLocal = 0; updateUI(); loadLeaderboard(); }})  
-        .catch(()=>{ /* ignore */});  
-      alert('🎉 Ad complete — +1 spin awarded.');  
-    } else {  
-      const fallbackUrl = `${BACKEND_BASE}/reward-ad?userId=${encodeURIComponent(user.id)}`;  
-      if (tg && tg.openLink) tg.openLink(fallbackUrl); else window.open(fallbackUrl,'_blank');  
-      alert('Ad opened externally. After watching, server will credit a spin.');  
-    }  
-  }catch(e){  
-    console.warn('Ad failed/closed', e);  
-    alert('Ad not completed or failed. No spin awarded.');  
-  }finally{  
-    adInProgress = false; watchAdBtn.disabled = false; watchAdBtn.textContent = '🎥 Watch Ad (Get Spin)';  
-  }  
-});  
-  
-/* weighted pick */  
-function weightedPickIndex(){  
-  const total = WEIGHTS.reduce((s,w)=>s+w,0);  
-  let r = Math.random()*total;  
-  for (let i=0;i<WEIGHTS.length;i++){  
-    if (r < WEIGHTS[i]) return i;  
-    r -= WEIGHTS[i];  
-  }  
-  return WEIGHTS.length - 1;  
-}  
-  
-/* rotation animation: targetIndex -> bring center of that slice to top pointer (-90deg) */  
-function rotateToIndex(targetIndex, onComplete){  
-  if (isAnimating) return;  
-  isAnimating = true;  
-  const arcDeg = 360 / N;  
-  const targetDeg = -90 - (targetIndex * arcDeg + arcDeg/2);  
-  const spins = 5 + Math.floor(Math.random()*3);  
-  const final = spins*360 + targetDeg;  
-  const duration = 4200;  
-  const start = performance.now();  
-  
-  spinSound.currentTime = 0; spinSound.play();  
-  let lastTick = -1;  
-  
-  function frame(now){  
-    const t = Math.min(1,(now - start)/duration);  
-    const eased = 1 - Math.pow(1 - t, 3);  
-    const deg = final * eased;  
-    drawWheel((deg) * Math.PI/180);  
-    const tickCount = Math.floor((eased * spins * N));  
-    if (tickCount !== lastTick){  
-      tickSound.currentTime = 0; tickSound.play();  
-      lastTick = tickCount;  
-    }  
-  
-    if (t < 1) requestAnimationFrame(frame);  
-    else {  
-      isAnimating = false;  
-      drawWheel((final) * Math.PI/180);  
-      onComplete && onComplete();  
-    }  
-  }  
-  requestAnimationFrame(frame);  
-}  
-  
-/* helpers */  
-function showLoading(show){ loadingEl.style.display = show ? 'flex' : 'none' }  
-function showWelcome(){ const name = user?.name || (tg?.initDataUnsafe?.user?.first_name) || 'Player'; welcomeEl.textContent = `Welcome, ${name}`; welcomeEl.classList.add('show'); setTimeout(()=> welcomeEl.classList.remove('show'),4200) }  
-  
-/* start */  
-init();  
-</script>  </body>  
-</html>  
-```0
+<script>
+let points = 0;
+let isSpinning = false;
+
+// UI update
+document.getElementById("points").innerText = points;
+
+// SPIN LOGIC
+document.getElementById("spinButton").onclick = () => {
+
+  if (isSpinning) return;
+  isSpinning = true;
+
+  // Random spin amount
+  const fullSpins = 5;
+  const randomDegree = Math.floor(Math.random() * 360);
+  const finalDegree = fullSpins * 360 + randomDegree;
+
+  const wheel = document.getElementById("wheel");
+
+  wheel.style.transform = `rotate(${finalDegree}deg)`;
+
+  // Result calculation
+  setTimeout(() => {
+    isSpinning = false;
+    const index = Math.floor((360 - (finalDegree % 360)) / (360 / 12));
+
+    const rewards = [
+      75,  // 75 coins
+      "FREE SPIN",
+      50,
+      "TRY AGAIN",
+      "BONUS",
+      100,
+      "SMALL GIFT",
+      20,
+      "JACKPOT",
+      "EXTRA LIFE",
+      "MYSTERY",
+      75
+    ];
+
+    const result = rewards[index % rewards.length];
+
+    if (typeof result === "number") {
+      points += result;
+      alert("🎉 You won " + result + " coins!");
+    } else {
+      alert("🎁 " + result);
+    }
+
+    document.getElementById("points").innerText = points;
+
+  }, 4100);
+};
+</script>
+
+</body>
+</html>
