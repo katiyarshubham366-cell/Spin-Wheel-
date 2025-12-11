@@ -1,4 +1,4 @@
-<!doctype html>
+ <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -14,7 +14,7 @@
   --muted:#f3d8b6;
 }
 
-/* THEME */
+/* Theme */
 html,body{
   margin:0;
   background:
@@ -31,7 +31,7 @@ html,body{
   padding:20px;
 }
 
-/* HEADER */
+/* Header */
 .header{
   display:flex;
   justify-content:space-between;
@@ -56,7 +56,7 @@ html,body{
   font-weight:800;
 }
 
-/* WHEEL */
+/* Wheel Area */
 .wheel-area{
   margin-top:20px;
   display:flex;
@@ -67,21 +67,46 @@ html,body{
 #wheel{
   width:320px;
   height:320px;
-  border-radius:50%;
   position:relative;
   transition:transform 4s cubic-bezier(.17,.67,.15,1);
 }
 
+/* CORRECTED POINTER POSITION */
 .pointer{
   width:70px;
   position:absolute;
-  top:-20px;
   left:50%;
   transform:translateX(-50%);
   z-index:10;
+  top: calc(50% - 190px);
 }
 
-/* TELEGRAM BUTTON */
+/* Buttons */
+.spinBtn{
+  margin-top:25px;
+  padding:18px 26px;
+  border-radius:18px;
+  font-weight:900;
+  font-size:18px;
+  border:none;
+  cursor:pointer;
+  background:linear-gradient(90deg,var(--gold1),var(--gold2));
+  color:#3a2b00;
+}
+
+.adBtn{
+  margin-top:12px;
+  padding:12px 16px;
+  border-radius:14px;
+  font-weight:700;
+  font-size:14px;
+  border:1px solid rgba(255,255,255,0.25);
+  background:rgba(255,255,255,0.08);
+  color:white;
+  cursor:pointer;
+}
+
+/* Telegram Button */
 .telegram-btn{
   position:fixed;
   right:20px;
@@ -91,18 +116,6 @@ html,body{
   border-radius:50%;
   cursor:pointer;
   box-shadow:0 8px 20px rgba(0,0,0,0.5);
-}
-
-/* SPIN BUTTON */
-.spinBtn{
-  margin-top:20px;
-  padding:14px 20px;
-  border-radius:14px;
-  font-weight:800;
-  border:none;
-  cursor:pointer;
-  background:linear-gradient(90deg,var(--gold1),var(--gold2));
-  color:#3a2b00;
 }
 </style>
 </head>
@@ -116,77 +129,128 @@ html,body{
     <div class="pointsBox">Points: <span id="points">0</span></div>
   </div>
 
-  <!-- WHEEL AREA -->
+  <!-- WHEEL -->
   <div class="wheel-area">
-    <img id="wheel" src="wheel1.png">
-    <img class="pointer" src="pointer1.png">
+    <div style="position:relative;">
+      <img id="wheel" src="wheel1.png">
+      <img class="pointer" src="pointer1.png">
+    </div>
 
     <button class="spinBtn" id="spinButton">SPIN</button>
+    <button class="adBtn" id="adButton">🎥 Watch Ad (Get Spin)</button>
   </div>
 
 </div>
 
 <!-- TELEGRAM BUTTON -->
-<img src="telegram.png" class="telegram-btn" onclick="window.open('https://t.me/Spinwheel25channel','_blank')">
+<img src="telegram.png" class="telegram-btn"
+     onclick="window.open('https://t.me/Spinwheel25channel','_blank')">
 
 <script>
-let points = 0;
-let isSpinning = false;
+let points = Number(localStorage.getItem("sw_points") || 0);
+let spins = Number(localStorage.getItem("sw_spins") || 3); // 3 free spins
+let spinning = false;
 
-// UI update
 document.getElementById("points").innerText = points;
 
-// SPIN LOGIC
+/* =====================
+   WATCH AD (30 SECONDS)
+===================== */
+document.getElementById("adButton").onclick = async () => {
+
+  alert("Ad started. WATCH FULL 30 seconds.\nDo NOT close early or no spin will be rewarded.");
+
+  const ok = confirm("Click OK to simulate full 30 sec watched.\n(This will take 30 sec)");
+
+  if (!ok) return;
+
+  await new Promise(r => setTimeout(r, 30000)); // 30 sec wait
+
+  alert("Ad completed ✔ You earned +1 spin!");
+
+  spins++;
+  localStorage.setItem("sw_spins", spins);
+};
+
+/* =====================
+   SPIN LOGIC
+===================== */
 document.getElementById("spinButton").onclick = () => {
 
-  if (isSpinning) return;
-  isSpinning = true;
+  if (spinning) return;
 
-  // Random spin amount
-  const fullSpins = 5;
-  const randomDegree = Math.floor(Math.random() * 360);
-  const finalDegree = fullSpins * 360 + randomDegree;
+  if (spins <= 0) {
+    alert("No spins left! Watch ads to earn more.");
+    return;
+  }
+
+  spinning = true;
+  spins--;
+  localStorage.setItem("sw_spins", spins);
 
   const wheel = document.getElementById("wheel");
 
-  wheel.style.transform = `rotate(${finalDegree}deg)`;
+  const fullSpins = 6;
+  const randomDegree = Math.floor(Math.random() * 360);
+  const finalDeg = fullSpins * 360 + randomDegree;
 
-  // Result calculation
+  wheel.style.transform = `rotate(${finalDeg}deg)`;
+
   setTimeout(() => {
-    isSpinning = false;
-    const index = Math.floor((360 - (finalDegree % 360)) / (360 / 12));
+    spinning = false;
 
-    const rewards = [
-      75,  // 75 coins
-      "FREE SPIN",
-      50,
-      "TRY AGAIN",
-      "BONUS",
-      100,
-      "SMALL GIFT",
-      20,
-      "JACKPOT",
-      "EXTRA LIFE",
-      "MYSTERY",
-      75
-    ];
+    const segment = Math.floor((360 - (finalDeg % 360)) / 30); // 12 slices
 
-    const result = rewards[index % rewards.length];
+    rewardSegment(segment);
 
-    if (typeof result === "number") {
-      points += result;
-      alert("🎉 You won " + result + " coins!");
-    } else {
-      alert("🎁 " + result);
-    }
+  }, 4200);
+};
 
+/* =====================
+   PRIZES (CONTROLLED ODDS)
+===================== */
+
+function rewardSegment(i){
+
+  const prizes = [
+    {name:"75", type:"coins", min:75, max:75, weight:4},
+    {name:"FREE SPIN", type:"spin", weight:3},
+    {name:"50", type:"coins", min:50, max:50, weight:5},
+    {name:"TRY AGAIN", type:"nothing", weight:6},
+    {name:"BONUS ROUND", type:"spin", weight:2},
+    {name:"100", type:"coins", min:100, max:100, weight:3},
+    {name:"SMALL GIFT", type:"coins", min:50, max:50, weight:4},
+    {name:"20", type:"coins", min:20, max:20, weight:6},
+    {name:"JACKPOT", type:"coins", min:200, max:200, weight:1},
+    {name:"EXTRA LIFE", type:"spin", weight:3},
+    {name:"MYSTERY", type:"coins", min:50, max:80, weight:3},
+    {name:"75", type:"coins", min:75, max:75, weight:4}
+  ];
+
+  const p = prizes[i];
+
+  if (p.type === "spin") {
+    spins++;
+    localStorage.setItem("sw_spins", spins);
+    alert("🎁 You earned 1 extra spin!");
+    return;
+  }
+
+  if (p.type === "coins") {
+    const reward = p.min === p.max ? p.min : 
+                   Math.floor(Math.random() * (p.max - p.min + 1)) + p.min;
+
+    points += reward;
+    localStorage.setItem("sw_points", points);
     document.getElementById("points").innerText = points;
 
-  }, 4100);
-};
+    alert("🎉 You won " + reward + " coins!");
+    return;
+  }
+
+  alert("No reward. Try again!");
+}
 </script>
 
 </body>
 </html>
-
-
