@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Spin To Win — Home</title>
+<style>
+:root{
+  --bg1:#3b0b3b;
+  --bg2:#120018;
+  --card:#ffffff10;
+  --gold:#ffbf00;
+  --muted:#f3d8b6;
+  --accent: linear-gradient(90deg,#ffd166,#ffbf00);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,Arial,sans-serif;background:
+  radial-gradient(800px 400px at 10% 10%, rgba(255,191,0,0.06), transparent 6%),
+  linear-gradient(180deg,var(--bg1),var(--bg2)); color:#fff}
+.container{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{width:100%;max-width:420px;border-radius:18px;padding:18px 18px 26px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));border:1px solid rgba(255,255,255,0.03);box-shadow:0 12px 40px rgba(0,0,0,0.6)}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.title{font-size:20px;font-weight:800;letter-spacing:1px}
+.pointsBox{background:rgba(0,0,0,0.25);padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);font-weight:800}
+
+/* background coin animation */
+.bg-coins{position:fixed;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:0.12;background-image:
+  radial-gradient(circle at 10% 20%, rgba(255,215,0,0.18) 0 1px, transparent 2px),
+  radial-gradient(circle at 70% 80%, rgba(255,215,0,0.12) 0 1px, transparent 2px);}
+.bg-title{display:block;text-align:center;font-weight:900;color:var(--gold);font-size:42px;margin-bottom:12px;text-shadow:0 6px 18px #000}
+
+/* menu buttons */
+.menu{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.btn{padding:14px 18px;border-radius:12px;border:none;font-weight:800;cursor:pointer;background:linear-gradient(90deg,#7b2ff7,#ff6ad5);color:#04121a;box-shadow:0 8px 20px rgba(0,0,0,0.5);font-size:16px}
+.btn.secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.06);box-shadow:none}
+
+/* small footer note */
+.footer{margin-top:14px;text-align:center;color:var(--muted);font-size:13px}
+
+/* fake leaderboard modal */
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:90%;max-width:420px;background:linear-gradient(180deg,#0a0a0f, #071028);border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.04);display:none;z-index:9999}
+.modal h3{margin:0 0 8px 0;color:var(--gold)}
+.modal .row{padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
+.closeBtn{position:absolute;right:12px;top:10px;background:transparent;border:none;color:var(--muted);font-weight:800;cursor:pointer}
+
+/* responsive */
+@media (max-width:420px){ .bg-title{font-size:36px} .btn{font-size:15px} }
+</style>
+</head>
+<body>
+  <div class="bg-coins"></div>
+
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <div>
+          <div class="title">Spin to Win</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.6)">Play & Earn Points</div>
+        </div>
+        <div class="pointsBox">Points: <span id="homePoints">0</span></div>
+      </div>
+
+      <div style="text-align:center">
+        <div class="bg-title">SPIN TO WIN</div>
+      </div>
+
+      <div class="menu">
+        <button id="openSpin" class="btn">🎰 Spin</button>
+        <button id="openLeaderboard" class="btn secondary">🏆 Leaderboard </button>
+        <button id="referBtn" class="btn secondary">🔗 Refer & Earn</button>
+        <button id="redeemBtn" class="btn secondary">💳 Redeem</button>
+      </div>
+
+      <div class="footer">Tip: Watch ads on the spin page to get extra spins.</div>
+    </div>
+  </div>
+
+  <!--  leaderboard modal -->
+  <div id="lbModal" class="modal" role="dialog" aria-hidden="true">
+    <button class="closeBtn" id="closeLb">✕</button>
+    <h3>Leaderboard</h3>
+    <div id="lbContent">
+      <div class="row">1. Rahul — 959 pts</div>
+      <div class="row">2. Ayush — 520 pts</div>
+      <div class="row">3. You — 0 pts</div>
+    </div>
+    <div style="margin-top:10px;color:var(--muted);font-size:13px">Spin to get to the top of the leaderboard.</div>
+  </div>
+
+<script>
+const BACKEND_BASE = "https://spin-backend-yzlk.onrender.com"; // same backend as spin page
+
+// UI refs
+const pointsEl = document.getElementById('homePoints');
+const openSpin = document.getElementById('openSpin');
+const openLeaderboard = document.getElementById('openLeaderboard');
+const referBtn = document.getElementById('referBtn');
+const redeemBtn = document.getElementById('redeemBtn');
+const lbModal = document.getElementById('lbModal');
+const closeLb = document.getElementById('closeLb');
+
+// load user points from backend (best effort)
+async function loadPoints(){
+  try{
+    const res = await fetch(BACKEND_BASE + '/api/user', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ userId: localStorage.getItem('sw_user') || '' })
+    });
+    const json = await res.json();
+    if (json && json.user && json.user.points !== undefined) pointsEl.innerText = json.user.points;
+    else pointsEl.innerText = localStorage.getItem('sw_points') || 0;
+  }catch(e){
+    pointsEl.innerText = localStorage.getItem('sw_points') || 0;
+  }
+}
+loadPoints();
+
+// navigation
+openSpin.addEventListener('click', ()=> {
+  // open spin page (same domain). If hosted in same repo, open spin.html
+  window.location.href = 'spin.html';
+});
+
+// leaderboard modal
+openLeaderboard.addEventListener('click', ()=> {
+  lbModal.style.display = 'block';
+});
+closeLb.addEventListener('click', ()=> lbModal.style.display = 'none');
+
+// refer -> open refer.html (prefer Telegram WebApp openLink, fallback to relative navigation)
+referBtn.addEventListener('click', ()=> {
+  const referPath = 'refer.html';
+  if (window.Telegram && Telegram.WebApp && Telegram.WebApp.openLink) {
+    // use full URL when opening from Telegram for reliability
+    const full = location.origin + location.pathname.replace(/index\.html$/,'') + referPath;
+    Telegram.WebApp.openLink(full);
+  } else {
+    // fallback to same-tab navigation (works in browser)
+    window.location.href = referPath;
+  }
+});
+
+// redeem -> open redeem page on backend (or show placeholder)
+redeemBtn.addEventListener('click', ()=> {
+  window.location.href = 'redeem.html';
+});
+</script>
+</body>
+</html>

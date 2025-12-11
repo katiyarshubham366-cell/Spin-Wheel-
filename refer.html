@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Refer & Earn</title>
+
+<style>
+:root {
+  --bg1:#3b0b3b;
+  --bg2:#120018;
+  --gold:#ffbf00;
+  --muted:#f3d8b6;
+}
+
+html, body {
+  margin:0;
+  padding:0;
+  height:100%;
+  font-family:Inter, Arial, sans-serif;
+  background:
+    radial-gradient(800px 400px at 10% 10%, rgba(255,191,0,0.06), transparent 6%),
+    linear-gradient(180deg,var(--bg1),var(--bg2));
+  color:#fff;
+}
+
+.container {
+  max-width:420px;
+  margin:0 auto;
+  padding:20px;
+}
+
+.title {
+  text-align:center;
+  font-size:26px;
+  font-weight:900;
+  color:var(--gold);
+  margin-top:10px;
+  text-shadow:0 6px 18px #000;
+}
+
+.card {
+  background:rgba(255,255,255,0.06);
+  padding:18px;
+  border-radius:16px;
+  margin-top:18px;
+  border:1px solid rgba(255,255,255,0.05);
+  box-shadow:0 8px 24px rgba(0,0,0,0.6);
+}
+
+.label {
+  font-size:15px;
+  margin-bottom:6px;
+  color:var(--muted);
+}
+
+.box {
+  background:rgba(0,0,0,0.35);
+  padding:12px;
+  border-radius:10px;
+  word-wrap:break-word;
+  border:1px solid rgba(255,255,255,0.05);
+}
+
+.btn {
+  margin-top:14px;
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:none;
+  background:linear-gradient(90deg,#ffd166,#ffbf00);
+  color:#000;
+  font-weight:800;
+  font-size:16px;
+  cursor:pointer;
+  box-shadow:0 6px 16px rgba(0,0,0,0.5);
+}
+
+.btn.secondary {
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.2);
+  color:var(--muted);
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="title">Refer & Earn 💰</div>
+
+  <div class="card">
+
+    <div class="label">Your Referral Code</div>
+    <div id="refCode" class="box">Loading...</div>
+
+    <div class="label" style="margin-top:14px;">Your Invite Link</div>
+    <div id="refLink" class="box">Generating...</div>
+
+    <button id="copyBtn" class="btn">📋 Copy Link</button>
+    <button id="shareBtn" class="btn">🔗 Share</button>
+
+    <button id="backBtn" class="btn secondary">⬅ Back to Home</button>
+
+    <div style="margin-top:12px;color:var(--muted);font-size:13px;text-align:center;">
+      Earn <b>100 points</b> for each friend who joins and completes 5 spins!
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// BACKEND (same as your main project)
+const BACKEND_BASE = "https://spin-backend-yzlk.onrender.com";
+
+// Load or generate a referral code
+let userId = localStorage.getItem("sw_user");
+
+// If no userId exists (first time user), generate one
+if (!userId) {
+  userId = "user-" + Math.random().toString(36).slice(2, 10);
+  localStorage.setItem("sw_user", userId);
+}
+
+// Referral code = last 6 digits of user ID
+const refCode = userId.slice(-6);
+document.getElementById("refCode").innerText = refCode;
+
+// Your bot link
+const inviteLink = `https://t.me/Fruitblast01_bot?start=${refCode}`;
+document.getElementById("refLink").innerText = inviteLink;
+
+// Copy button
+document.getElementById("copyBtn").addEventListener("click", () => {
+  navigator.clipboard.writeText(inviteLink);
+  alert("Referral link copied!");
+});
+
+// Share button
+document.getElementById("shareBtn").addEventListener("click", async () => {
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: "Join Spin To Win!",
+        text: "Spin & earn rewards — use my invite link!",
+        url: inviteLink
+      });
+    } else {
+      navigator.clipboard.writeText(inviteLink);
+      alert("Link copied! Your device doesn't support direct sharing.");
+    }
+  } catch (e) {
+    navigator.clipboard.writeText(inviteLink);
+    alert("Link copied!");
+  }
+});
+
+// Back to home
+document.getElementById("backBtn").addEventListener("click", () => {
+  window.location.href = "index.html";
+});
+</script>
+
+</body>
+</html>
