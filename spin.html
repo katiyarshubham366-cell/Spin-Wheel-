@@ -1,11 +1,12 @@
- <!doctype html>
+
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Spin Wheel</title>
 
-<!-- Monetag Rewarded Ad -->
+<!-- Monetag SDK -->
 <script src="//libtl.com/sdk.js" data-zone="10302036" data-sdk="show_10302036"></script>
 
 <style>
@@ -15,59 +16,35 @@
   --gold:#ffbf00;
   --muted:#f3d8b6;
 }
-
 html,body{
-  margin:0;
-  height:100%;
+  margin:0;height:100%;
   font-family:Inter,Arial,sans-serif;
   background:
     radial-gradient(900px 600px at 20% 10%, rgba(255,191,0,0.08), transparent 10%),
     linear-gradient(180deg,var(--bg1),var(--bg2));
   color:#fff;
 }
-
-.container{
-  max-width:480px;
-  margin:auto;
-  padding:16px;
-}
+.container{max-width:480px;margin:auto;padding:16px}
 
 /* HEADER */
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+.header{display:flex;justify-content:space-between;align-items:center}
 .backBtn{
-  padding:10px 14px;
-  border-radius:10px;
-  background:transparent;
-  border:1px solid rgba(255,255,255,0.15);
-  color:var(--muted);
-  font-weight:700;
+  padding:10px 14px;border-radius:10px;
+  background:transparent;border:1px solid rgba(255,255,255,.15);
+  color:var(--muted);font-weight:700
 }
 .pointsBox{
-  padding:10px 14px;
-  border-radius:12px;
-  background:rgba(0,0,0,0.35);
-  border:1px solid rgba(255,255,255,0.15);
-  font-weight:800;
+  padding:10px 14px;border-radius:12px;
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.15);
+  font-weight:800
 }
 
 /* WHEEL */
-.wheel-wrap{
-  margin-top:20px;
-  position:relative;
-  display:flex;
-  justify-content:center;
-}
-canvas{
-  width:320px;
-  height:320px;
-}
+.wheel-wrap{margin-top:20px;position:relative;display:flex;justify-content:center}
+canvas{width:340px;height:340px}
 .pointer{
-  position:absolute;
-  top:-6px;
+  position:absolute;top:-6px;
   width:0;height:0;
   border-left:14px solid transparent;
   border-right:14px solid transparent;
@@ -75,44 +52,25 @@ canvas{
 }
 
 /* BUTTONS */
-.controls{
-  margin-top:20px;
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
+.controls{margin-top:20px;display:flex;gap:12px}
 .spinBtn{
-  padding:14px 22px;
-  border-radius:14px;
-  border:none;
-  font-weight:800;
+  padding:14px 22px;border-radius:14px;
+  border:none;font-weight:800;
   background:linear-gradient(90deg,#ffd166,#ffbf00);
-  color:#3a2b00;
+  color:#3a2b00
 }
 .adBtn{
-  padding:14px 18px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.15);
+  padding:14px 18px;border-radius:14px;
   background:transparent;
-  color:var(--muted);
-  font-weight:700;
+  border:1px solid rgba(255,255,255,.15);
+  color:var(--muted);font-weight:700
 }
-
-.info{
-  margin-top:8px;
-  font-size:13px;
-  color:var(--muted);
-}
+.info{margin-top:8px;font-size:13px;color:var(--muted)}
 
 /* TELEGRAM */
 .telegram-btn{
-  position:fixed;
-  right:18px;
-  bottom:18px;
-  width:64px;
-  height:64px;
-  border-radius:50%;
-  cursor:pointer;
+  position:fixed;right:18px;bottom:18px;
+  width:64px;height:64px;border-radius:50%;
   box-shadow:0 8px 20px rgba(0,0,0,.5);
 }
 </style>
@@ -135,26 +93,29 @@ canvas{
     <button class="adBtn" id="adBtn">🎥 Watch Ad</button>
   </div>
 
-  <div class="info">
-    Free spins: <b id="freeSpins">3</b>
-  </div>
+  <div class="info">Free spins: <b id="freeSpins">0</b></div>
 </div>
 
 <img src="https://files.catbox.moe/a3kksw.png" class="telegram-btn"
 onclick="window.open('https://t.me/Spinwheel25channel','_blank')">
 
 <script>
-/* GAME STATE */
+/* ================= CONFIG ================= */
+const BACKEND = "https://spin-backend-yzlk.onrender.com";
+let userId = localStorage.getItem("sw_uid") || ("u_" + Math.random().toString(36).slice(2));
+localStorage.setItem("sw_uid", userId);
+
+/* ================= GAME STATE ================= */
 let points = 0;
-let freeSpins = 3;
+let freeSpins = 0;
 let angle = 0;
 let spinning = false;
 
-/* SEGMENTS (clockwise from top) */
+/* ================= SEGMENTS ================= */
 const segments = [
   { label:"JACKPOT", value:200, weight:1 },
   { label:"TRY AGAIN", value:0, weight:20 },
-  { label:"30", value:30, weight:15 },
+  { label:"30", value:30, weight:16 },
   { label:"50", value:50, weight:12 },
   { label:"TRY AGAIN", value:0, weight:20 },
   { label:"FREE SPIN", value:"free", weight:10 },
@@ -162,22 +123,18 @@ const segments = [
   { label:"MEGA", value:100, weight:2 }
 ];
 
-const colors = [
-  "#e74c3c","#95a5a6","#2ecc71","#f1c40f",
-  "#bdc3c7","#9b59b6","#3498db","#f39c12"
-];
+const colors = ["#e74c3c","#bdc3c7","#2ecc71","#f1c40f",
+                "#95a5a6","#9b59b6","#3498db","#f39c12"];
 
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
-const cx = canvas.width/2;
-const cy = canvas.height/2;
+const cx = canvas.width/2, cy = canvas.height/2;
 const radius = canvas.width/2 - 20;
 
-/* DRAW WHEEL */
+/* ================= DRAW ================= */
 function drawWheel(){
-  const arc = 2*Math.PI / segments.length;
+  const arc = 2*Math.PI/segments.length;
   ctx.clearRect(0,0,canvas.width,canvas.height);
-
   for(let i=0;i<segments.length;i++){
     const start = angle + i*arc - Math.PI/2;
     ctx.beginPath();
@@ -195,15 +152,28 @@ function drawWheel(){
     ctx.fillText(segments[i].label, radius-20, 10);
     ctx.restore();
   }
-
-  ctx.beginPath();
-  ctx.arc(cx,cy,70,0,2*Math.PI);
-  ctx.fillStyle="#f1c40f";
-  ctx.fill();
 }
 drawWheel();
 
-/* WEIGHTED PICK */
+/* ================= BACKEND ================= */
+async function api(path, body){
+  const r = await fetch(BACKEND+path,{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body)
+  });
+  return r.json();
+}
+
+async function init(){
+  const res = await api("/api/auth",{ userId });
+  points = res.user.points || 0;
+  freeSpins = res.user.spinsLeft ?? 3;
+  updateUI();
+}
+init();
+
+/* ================= LOGIC ================= */
 function pickIndex(){
   const total = segments.reduce((s,x)=>s+x.weight,0);
   let r = Math.random()*total;
@@ -214,13 +184,9 @@ function pickIndex(){
   return 0;
 }
 
-/* SPIN */
-document.getElementById("spinBtn").onclick = ()=>{
+document.getElementById("spinBtn").onclick = async ()=>{
   if(spinning) return;
-  if(freeSpins<=0){
-    alert("No spins left. Watch an ad!");
-    return;
-  }
+  if(freeSpins<=0){ alert("Watch ad to get spin"); return; }
 
   freeSpins--;
   updateUI();
@@ -229,56 +195,58 @@ document.getElementById("spinBtn").onclick = ()=>{
   const idx = pickIndex();
   const arc = 360/segments.length;
   const target = 360*5 + (360 - (idx*arc + arc/2));
-
-  const start = performance.now();
-  const duration = 4000;
+  const start = performance.now(), duration = 4200;
 
   function anim(t){
     const p = Math.min(1,(t-start)/duration);
-    const ease = 1-Math.pow(1-p,3);
-    angle = (target*ease) * Math.PI/180;
+    angle = (target*(1-Math.pow(1-p,3))) * Math.PI/180;
     drawWheel();
     if(p<1) requestAnimationFrame(anim);
-    else{
-      spinning=false;
-      reward(segments[idx]);
-    }
+    else finish(idx);
   }
   requestAnimationFrame(anim);
 };
 
-/* REWARD */
-function reward(seg){
+async function finish(i){
+  spinning=false;
+  const seg = segments[i];
+
   if(seg.value==="free"){
     freeSpins++;
     alert("🎉 Free Spin!");
-  }else if(seg.label==="TRY AGAIN"){
-    alert("😅 Try Again");
-  }else{
-    points += seg.value;
+  }else if(seg.value>0){
+    const r = await api("/save-points",{ userId, points:seg.value });
+    points = r.points;
     alert("🎉 You won "+seg.value+" points");
+  }else{
+    alert("😅 Try Again");
   }
   updateUI();
 }
 
-/* WATCH AD */
+/* ================= AD SYSTEM (30s REQUIRED) ================= */
 document.getElementById("adBtn").onclick = async ()=>{
   try{
-    await show_10302036('pop'); // must watch full ad
+    const start = Date.now();
+    await show_10302036('pop');
+    const watched = (Date.now()-start)/1000;
+    if(watched < 30){
+      alert("❌ Watch full 30 seconds");
+      return;
+    }
     freeSpins++;
+    await api("/api/watch_ad_verify",{ userId });
     alert("✅ Ad completed! +1 spin");
     updateUI();
-  }catch(e){
-    alert("❌ Ad not completed. No reward.");
+  }catch{
+    alert("❌ Ad cancelled");
   }
 };
 
-/* UI */
 function updateUI(){
   document.getElementById("points").innerText = points;
   document.getElementById("freeSpins").innerText = freeSpins;
 }
-updateUI();
 </script>
 </body>
 </html>
